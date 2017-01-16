@@ -24,7 +24,7 @@ public class ClientExecuteProxy {
 			HttpHost proxy = new HttpHost("10.68.64.37", 8081);
 
 			RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
-			HttpGet request = new HttpGet("http://api.telegram.org/bot304240201%3AAAF0YTE5NyNaQV8Z-GhxWRQb6ftXpsXZr4w/getme");
+			HttpGet request = new HttpGet("http://api.telegram.org/bot304240201%3AAAF0YTE5NyNaQV8Z-GhxWRQb6ftXpsXZr4w/getUpdates");
 			request.setConfig(config);
 
 			CloseableHttpResponse response = httpclient.execute( request);
