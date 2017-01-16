@@ -13,9 +13,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by Christian Lusardi
@@ -112,48 +109,5 @@ public class Tester {
 		}
 	}
 
-	/**
-	 * Creates a JSONObject with the content of a ReplyMarkupKeyboard
-	 */
-	public static JSONObject toJson() {
-		JSONObject jsonObject = new JSONObject();
 
-		/// Convert the List<List<String>> to JSONArray
-		JSONArray jsonkeyboard = new JSONArray();
-		
-		for (List<String> innerRow : keyboard) {
-			JSONArray innerJSONKeyboard = new JSONArray();
-			for (String element : innerRow) {
-				innerJSONKeyboard.put(element);
-			}
-			jsonkeyboard.put(innerJSONKeyboard);
-		}
-		
-		
-		try {
-			/// Add the converted list to final JSON object
-			jsonObject.put(KEYBOARD_FIELD, jsonkeyboard);
-			
-
-			/// Add oneTimeKeyboard if necessary
-			if (oneTimeKeyboad != null) {
-				jsonObject.put(ONETIMEKEYBOARD_FIELD, oneTimeKeyboad);
-			}
-			/// Add ResizeKeyboard if necessary
-			if (resizeKeyboard != null) {
-				jsonObject.put(RESIZEKEYBOARD_FIELD, resizeKeyboard);
-			}
-			/// Add selective if necessary
-			if (selective != null) {
-				jsonObject.put(SELECTIVE_FIELD, selective);
-			}
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-
-		return jsonObject;
-	}
 }

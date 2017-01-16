@@ -16,6 +16,8 @@ import org.apache.http.util.EntityUtils;
 
 public class SenderMessage {
 	
+	
+	
 	public static void main(String[] args) throws Exception {
 
 		CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -48,9 +50,7 @@ public class SenderMessage {
 
 			CloseableHttpResponse response = httpclient.execute( request);
 			
-			
-			System.out.println("status line -->"+response.getStatusLine());
-			
+						
 			try {
 				System.out.println("----------------------------------------");
 				System.out.println(response.getStatusLine());
@@ -62,6 +62,8 @@ public class SenderMessage {
 			httpclient.close();
 		}
 	}
+
+	
 	
 
 }
