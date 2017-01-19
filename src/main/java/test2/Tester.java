@@ -69,7 +69,7 @@ public class Tester {
 		/// TODO Fill keyboard, resizeKeyboard, selective and oneTimeKeyboard
 		/// with content, I ommit this part here
 		
-		text = "ciao anche a te";
+		text = "aooooo";
 		chatId = 220202318;
 
 		try {
@@ -99,7 +99,7 @@ public class Tester {
 			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
 			
 			httppost.setConfig(config);
-
+			
 			/// TODO Execute httppost using, for example
 			CloseableHttpResponse response = httpclient.execute( httppost);
 			

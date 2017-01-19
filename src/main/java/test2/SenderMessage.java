@@ -38,7 +38,7 @@ public class SenderMessage {
 			/// Add chatid to the list
 			nameValuePairs.add(new BasicNameValuePair("chat_id", "220202318"));
 			/// Add text to the list
-			nameValuePairs.add(new BasicNameValuePair("text", "sei gay"));
+			nameValuePairs.add(new BasicNameValuePair("text", "aaaaa"));
 			
 			
 
