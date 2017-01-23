@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,29 +40,32 @@ public class ExampleBot {
 									/// recepient — User or GroupChat id
 	// Campi necessari per inviare un messaggio
 	public static final String TEXT_FIELD = "text";
-	private static String text;
+
 	// Campi necessari per inviare una foto
 	public static final String PHOTO_FIELD = "photo";
+
 	public static final String VIDEO_FIELD = "video";
-	private static File photo;
+
 	// Campi opzionali per altre operazioni
 	public static final String REPLYTOMESSAGEID_FIELD = "reply_to_message_id";
 	private static Integer replyToMessageId;
 
 	public static void main(String[] args) {
 
-		text = "tento di mandarti una foto e un video";
-		chatId = 29337550;
-		String photoPath = "D:\\Users\\clusardi\\git\\personale\\TelegramBot\\src\\main\\resources\\photo.jpg";
-		String videoPath = "D:\\Users\\clusardi\\git\\personale\\TelegramBot\\src\\main\\resources\\sample_video.mp4";
+		String text = "ce provo";
+		chatId = 220202318;
+		String photoPath = "D:\\workspaceIntelliJ\\TelegramBot\\src\\main\\resources\\photo.jpg";
+		String videoPath = "D:\\workspaceIntelliJ\\TelegramBot\\src\\main\\resources\\sample_video.mp4";
+		String ip = "10.68.64.37";
+		int port = 8081;
 
 		try {
+			
+			System.out.println(getTextResponse(sendMessageWithProxy(text, ip, port)));
 
-			sendMessage();
+			System.out.println(getTextResponse(sendPhotoWithProxy(photoPath, ip, port)));
 
-			sendPhoto(photoPath);
-
-			sendVideo(videoPath);
+			System.out.println(getTextResponse(sendVideoWithProxy(videoPath, ip, port)));
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -69,163 +73,122 @@ public class ExampleBot {
 
 	}
 
-	public static void sendMessage() throws ClientProtocolException, IOException {
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpHost proxy = new HttpHost("10.68.64.37", 8081);
-		RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
+	public static CloseableHttpResponse sendMessage(String text) throws ClientProtocolException, IOException {
+		return sendMessageWithProxy(text, null, 0);
+	}
 
-		/// Create Http POST method and set correct headers
+	public static CloseableHttpResponse sendMessageWithProxy(String text, String ip, int port)
+			throws ClientProtocolException, IOException {
+
+		CloseableHttpClient httpclient = HttpClients.createDefault();
 		String url = BASEURL + TOKEN + "/" + SEND_MESSAGE_PATH;
 		HttpPost httppost = new HttpPost(url);
+
+		if (ip != null) {
+			HttpHost proxy = new HttpHost(ip, port);
+			RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
+			httppost.setConfig(config);
+		}
+
 		httppost.addHeader("Content-type", "application/x-www-form-urlencoded");
 		httppost.addHeader("charset", "UTF-8");
-
-		/// Create list of parameters
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-		/// Add chatid to the list
 		nameValuePairs.add(new BasicNameValuePair(CHATID_FIELD, chatId + ""));
-		/// Add text to the list
 		nameValuePairs.add(new BasicNameValuePair(TEXT_FIELD, text));
-
-		/// Set list of parameters as entity of the Http POST method
 		httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
+		return httpclient.execute(httppost);
 
-		httppost.setConfig(config);
-
-		/// TODO Execute httppost using, for example
-		CloseableHttpResponse response = httpclient.execute(httppost);
-
-		System.out.println(response.getStatusLine());
 	}
 
+	public static CloseableHttpResponse sendVide(String videoPath) throws ClientProtocolException, IOException{
+		return sendVideoWithProxy(videoPath, null, 0);
+	}
 	
+	public static CloseableHttpResponse sendVideoWithProxy(String videoPath, String ip, int port)
+			throws ClientProtocolException, IOException {
 
-	public static void sendVideo(String videoPath) throws ClientProtocolException, IOException {
 		CloseableHttpClient httpclient = null;
 		String url = BASEURL + TOKEN + "/" + SEND_VIDEO_PATH;
-		try {
+		HttpPost post = new HttpPost(url);
+		if (ip != null) {
 			HttpHost proxy = new HttpHost("10.68.64.37", 8081);
 			RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
-			File imgFile = new File(videoPath);
-			HttpPost post = new HttpPost(url);
-
-			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-			builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-			builder.addBinaryBody(VIDEO_FIELD, imgFile, ContentType.DEFAULT_BINARY, imgFile.getName());
-			builder.setBoundary("---Content Boundary");
-			
-
-			builder.addTextBody(CHATID_FIELD, String.valueOf(chatId), ContentType.TEXT_PLAIN);
-			builder.setBoundary("---Content Boundary");
-
-			httpclient = HttpClientBuilder.create().build();
-			HttpEntity entity = builder.build();
-			post.setEntity(entity);
 			post.setConfig(config);
-			HttpResponse response = httpclient.execute(post);
-			if (response != null) {
-				HttpEntity responseEntity = response.getEntity();
-				if (responseEntity != null) {
-					InputStream responseStream = responseEntity.getContent() ;
-                    if (responseStream != null){
-                        BufferedReader br = new BufferedReader (new InputStreamReader (responseStream)) ;
-                        String responseLine = br.readLine() ;
-                        String tempResponseString = "" ;
-                        while (responseLine != null){
-                            tempResponseString = tempResponseString + responseLine + System.getProperty("line.separator") ;
-                            responseLine = br.readLine() ;
-                        }
-                        br.close() ;
-                        if (tempResponseString.length() > 0){
-                            System.out.println(tempResponseString);
-                        }
-                    }
-                    responseStream.close();
-				}
-			}
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try {
-				httpclient.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
-		return;
+		File imgFile = new File(videoPath);
+
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+		builder.addBinaryBody(VIDEO_FIELD, imgFile, ContentType.DEFAULT_BINARY, imgFile.getName());
+		builder.setBoundary("---Content Boundary");
+
+		builder.addTextBody(CHATID_FIELD, String.valueOf(chatId), ContentType.TEXT_PLAIN);
+		builder.setBoundary("---Content Boundary");
+
+		httpclient = HttpClientBuilder.create().build();
+		HttpEntity entity = builder.build();
+		post.setEntity(entity);
+
+		return httpclient.execute(post);
+
 	}
-	
-	
-	
-	public static void sendPhoto(String imagePath) {
+
+	public static CloseableHttpResponse sendPhoto(String imagePath) throws ClientProtocolException, IOException {
+		return sendPhotoWithProxy(imagePath, null, 0);
+	}
+
+	public static CloseableHttpResponse sendPhotoWithProxy(String imagePath, String ip, int port)
+			throws ClientProtocolException, IOException {
+
 		CloseableHttpClient httpclient = null;
 		String url = BASEURL + TOKEN + "/" + SEND_PHOTO_PATH;
-		try {
+		HttpPost httppost = new HttpPost(url);
+		if (ip != null) {
 			HttpHost proxy = new HttpHost("10.68.64.37", 8081);
 			RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
-			File imgFile = new File(imagePath);
-			HttpPost post = new HttpPost(url);
+			httppost.setConfig(config);
+		}
+		File imgFile = new File(imagePath);
 
-			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-			builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-			builder.addBinaryBody(PHOTO_FIELD, imgFile, ContentType.DEFAULT_BINARY, imgFile.getName());
-			builder.setBoundary("---Content Boundary");
-			
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+		builder.addBinaryBody(PHOTO_FIELD, imgFile, ContentType.DEFAULT_BINARY, imgFile.getName());
+		builder.setBoundary("---Content Boundary");
+		builder.addTextBody(CHATID_FIELD, String.valueOf(chatId), ContentType.TEXT_PLAIN);
+		builder.setBoundary("---Content Boundary");
 
-			builder.addTextBody(CHATID_FIELD, String.valueOf(chatId), ContentType.TEXT_PLAIN);
-			builder.setBoundary("---Content Boundary");
+		httpclient = HttpClientBuilder.create().build();
+		HttpEntity entity = builder.build();
+		httppost.setEntity(entity);
 
-			httpclient = HttpClientBuilder.create().build();
-			HttpEntity entity = builder.build();
-			post.setEntity(entity);
-			post.setConfig(config);
-			HttpResponse response = httpclient.execute(post);
-			if (response != null) {
-				HttpEntity responseEntity = response.getEntity();
-				if (responseEntity != null) {
-					InputStream responseStream = responseEntity.getContent() ;
-                    if (responseStream != null){
-                        BufferedReader br = new BufferedReader (new InputStreamReader (responseStream)) ;
-                        String responseLine = br.readLine() ;
-                        String tempResponseString = "" ;
-                        while (responseLine != null){
-                            tempResponseString = tempResponseString + responseLine + System.getProperty("line.separator") ;
-                            responseLine = br.readLine() ;
-                        }
-                        br.close() ;
-                        if (tempResponseString.length() > 0){
-                            System.out.println(tempResponseString);
-                        }
-                    }
-                    responseStream.close();
+		return httpclient.execute(httppost);
+
+	}
+
+	public static String getTextResponse(CloseableHttpResponse response)
+			throws UnsupportedOperationException, IOException {
+		String resp = "";
+		if (response != null) {
+			HttpEntity responseEntity = response.getEntity();
+			if (responseEntity != null) {
+				InputStream responseStream = responseEntity.getContent();
+				if (responseStream != null) {
+					BufferedReader br = new BufferedReader(new InputStreamReader(responseStream));
+					String responseLine = br.readLine();
+					String tempResponseString = "";
+					while (responseLine != null) {
+						tempResponseString = tempResponseString + responseLine + System.getProperty("line.separator");
+						responseLine = br.readLine();
+					}
+					br.close();
+					if (tempResponseString.length() > 0) {
+						resp += tempResponseString;
+					}
 				}
-			}
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try {
-				httpclient.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				responseStream.close();
 			}
 		}
-		return;
-	}	
+		return resp;
+	}
 
 }
