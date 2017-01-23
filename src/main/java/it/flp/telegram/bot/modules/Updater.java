@@ -22,57 +22,50 @@ import it.flp.telegram.bot.entities.UpdateResponse;
  *
  */
 public class Updater {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(Updater.class);
-	
+
 	private int seconds;
-	
-	
+
 	public Updater() {
 		super();
-		
-		
+
 	}
-	
-	
+
 	public UpdateResponse getUpdates() throws Exception {
-		
+
 		UpdateResponse updateResponse = null;
-		
+
 		log.debug("Start retrieve updates");
-		
 
 		try (CloseableHttpClient httpclient = HttpClients.createDefault();) {
 
-		
-	
 			HttpHost proxy = new HttpHost("10.68.64.37", 8081);
 
 			RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
-			HttpGet request = new HttpGet("http://api.telegram.org/bot304240201%3AAAF0YTE5NyNaQV8Z-GhxWRQb6ftXpsXZr4w/getUpdates");
+			HttpGet request = new HttpGet(
+					"http://api.telegram.org/bot304240201%3AAAF0YTE5NyNaQV8Z-GhxWRQb6ftXpsXZr4w/getUpdates");
 			request.setConfig(config);
 
-			try (CloseableHttpResponse response = httpclient.execute( request);) {
+			try (CloseableHttpResponse response = httpclient.execute(request);) {
 				String entityString = EntityUtils.toString(response.getEntity());
-				
+
 				Gson gson = new Gson();
 				updateResponse = gson.fromJson(entityString, UpdateResponse.class);
 			} catch (Exception e) {
-				log.error("Error: ",e.getMessage(),e);
+				log.error("Error: ", e.getMessage(), e);
 			}
-			
+
 		} catch (Exception e) {
 			log.error("Error duringe");
 		}
-		
-		
+
 		log.debug("End retrieve updates");
-		
+
 		return updateResponse;
-		
+
 	}
-	
-	
+
 	public int getSeconds() {
 		return seconds;
 	}
