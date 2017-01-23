@@ -34,7 +34,7 @@ public class ExampleBot {
 	public static final String BASEURL = "https://api.telegram.org/bot";
 	public static final String TOKEN = "304240201%3AAAF0YTE5NyNaQV8Z-GhxWRQb6ftXpsXZr4w";
 	public static final String SEND_MESSAGE_PATH = "sendmessage";
-	public static final String SEND_PHOTO_PATH = "sendphoto";
+	public static final String SEND_PHOTO_PATH = "sendPhoto";
 	
 	public static final String CHATID_FIELD = "chat_id";
 	private static Integer chatId; /// < Unique identifier for the message recepient — User or GroupChat id
@@ -54,7 +54,7 @@ public class ExampleBot {
 		text = "tento di mandarti una foto";
 		chatId = 220202318;
 		String photoPath = "D:\\workspaceIntelliJ\\TelegramBot\\src\\main\\resources\\photo.jpg";
-		System.out.println(photoPath);
+		
 		
 		try {
 			
@@ -104,22 +104,21 @@ public class ExampleBot {
 		RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
 		
 		/// Create Http POST method and set correct headers
-		String url = BASEURL + TOKEN + "/" + SEND_MESSAGE_PATH;
+		String url = BASEURL + TOKEN + "/" + SEND_PHOTO_PATH;
+		System.out.println(url);
 		HttpPost httppost = new HttpPost(url);
-		httppost.addHeader("Content-type", "application/x-www-form-urlencoded");
+//		httppost.addHeader("Content-type", "multipart/form-data");
 		httppost.addHeader("charset", "UTF-8");
 
 		/// Create list of parameters
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 		/// Add chatid to the list
 		nameValuePairs.add(new BasicNameValuePair(CHATID_FIELD, chatId + ""));
-		/// Add text to the list
-		nameValuePairs.add(new BasicNameValuePair(TEXT_FIELD, text));
 		
 		HttpEntity multiPartEntity = MultipartEntityBuilder
 			    .create()
-			    .addBinaryBody(SEND_PHOTO_PATH, new File(photoPath), ContentType.create("multipart/form-data"),"filename")
-			    .build();	
+			    .addBinaryBody(PHOTO_FIELD, new File(photoPath))
+			    .build();
 		
 		/// Set list of parameters as entity of the Http POST method
 		httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
@@ -128,7 +127,6 @@ public class ExampleBot {
 		
 		httppost.setConfig(config);
 		
-		/// TODO Execute httppost using, for example
 		CloseableHttpResponse response = httpclient.execute( httppost);
 		
 		System.out.println(response.getStatusLine());
