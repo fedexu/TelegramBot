@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+import it.flp.telegram.bot.constants.Constants;
 import it.flp.telegram.bot.entities.UpdateResponse;
 
 /**
@@ -32,33 +33,28 @@ public class Updater {
 
 	}
 
-	public UpdateResponse getUpdates() throws Exception {
+	public UpdateResponse getUpdates() throws Exception{
+		return getUpdatesWithProxy(null, 0);
+	}
+	public UpdateResponse getUpdatesWithProxy(String ip, int port) throws Exception {
 
 		UpdateResponse updateResponse = null;
-
+		String url = Constants.BASEURL + Constants.TOKEN + "/" + Constants.GET_UPDATES;
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpGet request = new HttpGet(url);
 		log.debug("Start retrieve updates");
 
-		try (CloseableHttpClient httpclient = HttpClients.createDefault();) {
-
-			HttpHost proxy = new HttpHost("10.68.64.37", 8081);
-
+		if (ip != null) {
+			HttpHost proxy = new HttpHost(ip, port);
 			RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
-			HttpGet request = new HttpGet(
-					"http://api.telegram.org/bot304240201%3AAAF0YTE5NyNaQV8Z-GhxWRQb6ftXpsXZr4w/getUpdates");
 			request.setConfig(config);
-
-			try (CloseableHttpResponse response = httpclient.execute(request);) {
-				String entityString = EntityUtils.toString(response.getEntity());
-
-				Gson gson = new Gson();
-				updateResponse = gson.fromJson(entityString, UpdateResponse.class);
-			} catch (Exception e) {
-				log.error("Error: ", e.getMessage(), e);
-			}
-
-		} catch (Exception e) {
-			log.error("Error duringe");
 		}
+
+		CloseableHttpResponse response = httpclient.execute(request);
+		String entityString = EntityUtils.toString(response.getEntity());
+
+		Gson gson = new Gson();
+		updateResponse = gson.fromJson(entityString, UpdateResponse.class);
 
 		log.debug("End retrieve updates");
 
