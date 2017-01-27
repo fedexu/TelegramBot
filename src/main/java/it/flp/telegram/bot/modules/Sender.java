@@ -26,13 +26,13 @@ import it.flp.telegram.bot.utils.Utils;
 
 public class Sender {
 
-	private static final Logger log = LoggerFactory.getLogger(Updater.class);
+	private static final Logger log = LoggerFactory.getLogger(Sender.class);
 
-	public CloseableHttpResponse sendMessage(String text, Integer chatId) throws Exception {
+	public CloseableHttpResponse sendMessage(String text, long chatId) throws Exception {
 		return sendMessageWithProxy(text, chatId, null, 0);
 	}
 
-	public CloseableHttpResponse sendMessageWithProxy(String text, Integer chatId, String ip, int port)
+	public CloseableHttpResponse sendMessageWithProxy(String text, long chatId, String ip, int port)
 			throws Exception {
 		log.debug("Start prepare HttpClient for send message request");
 		CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -58,11 +58,11 @@ public class Sender {
 		return response;
 	}
 
-	public CloseableHttpResponse sendPhoto(String imagePath, Integer chatId) throws Exception {
+	public CloseableHttpResponse sendPhoto(String imagePath, long chatId) throws Exception {
 		return sendPhotoWithProxy(imagePath, chatId, null, 0);
 	}
 
-	public CloseableHttpResponse sendPhotoWithProxy(String imagePath, Integer chatId, String ip, int port)
+	public CloseableHttpResponse sendPhotoWithProxy(String imagePath, long chatId, String ip, int port)
 			throws Exception {
 		log.debug("Start prepare HttpClient for send Photo request");
 		CloseableHttpClient httpclient = null;
@@ -92,11 +92,11 @@ public class Sender {
 		return response;
 	}
 
-	public CloseableHttpResponse sendVideo(String videoPath, Integer chatId) throws Exception {
+	public CloseableHttpResponse sendVideo(String videoPath, long chatId) throws Exception {
 		return sendVideoWithProxy(videoPath, chatId, null, 0);
 	}
 
-	public CloseableHttpResponse sendVideoWithProxy(String videoPath, Integer chatId, String ip, int port)
+	public CloseableHttpResponse sendVideoWithProxy(String videoPath, long chatId, String ip, int port)
 			throws Exception {
 		log.debug("Start prepare HttpClient for send Video request");
 		CloseableHttpClient httpclient = null;
