@@ -34,12 +34,17 @@ public class Updater {
 	}
 
 	public UpdateResponse getUpdates() throws Exception{
-		return getUpdatesWithProxy(null, 0);
+		return getUpdatesWithProxy(null, 0, "");
 	}
-	public UpdateResponse getUpdatesWithProxy(String ip, int port) throws Exception {
+
+	public UpdateResponse getUpdatesWithOffset(Long offset)throws Exception{
+		return getUpdatesWithProxy(null, 0 , "?offset=" + offset);
+	}
+
+	public UpdateResponse getUpdatesWithProxy(String ip, int port, String params) throws Exception {
 
 		UpdateResponse updateResponse = null;
-		String url = Constants.BASEURL + Constants.TOKEN + "/" + Constants.GET_UPDATES;
+		String url = Constants.BASEURL + Constants.TOKEN + "/" + Constants.GET_UPDATES + params;
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet request = new HttpGet(url);
 		log.debug("Start retrieve updates");
